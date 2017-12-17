@@ -65,6 +65,10 @@ the output is:
 
 if you add the `-byLine` flag the diff will be shown by lines.
 
+	./xml-diff -l ./testdata/left.xml -r ./testdata/right.xml -byLine
+
+the output is:
+
 ![Output From Diff](https://github.com/pschlump/xml-diff/raw/master/out/test02.png "Output from xml-diff with byLine flag")
 
 
