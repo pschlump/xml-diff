@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ConnectedApp xmlns="http://soap.sforce.com/2006/04/metadata">
+	<contactEmail>foo@example.org</contactEmail>
+	<label>WooCommerce</label>
+	<oauthConfig>
+		<callbackUrl>https://login.salesforce.com/services/oauth2/callback</callbackUrl>
+		<consumerKey>[31mCLI[0m[32mOTH[0mE[31mNTID[0m[32mR[0m</consumerKey>
+		<scopes>[31mBasic[0m[32mFull[0m</scopes>
+		<scopes>[31mApi</[0m[32mBa[0ms[32mi[0mc[31mopes>
+		<scopes>Web</scopes>
+		<scopes>Full[0m</scopes>
+	</oauthConfig>
+</ConnectedApp>
+
