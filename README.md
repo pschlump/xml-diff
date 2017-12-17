@@ -13,7 +13,19 @@ xml-diff will sort the attributes and values and then perform a `diff` on the re
 
     go get -u github.com/pschlump/xml-diff
 
-## Importing
+## To Build
+
+The command line utility is in the top level directory.
+
+	cd ~/.../github.com/pschlump/xml-diff
+	go build
+	cp xml-diff ~/bin
+
+You can run tests on the command line with
+
+	make test
+
+## Importing Package
 
 The command line is in this directory.  The package that performs most of the work is `xmllib`.
 
