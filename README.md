@@ -3,7 +3,7 @@ xml-diff Compare XML Files
 
 Compare XML files after sorting attributes and fields.
 
-A common database  vendors XML dump utility will regularly produce output where the order of the attributes changes.
+A common database vendor's XML dump utility will regularly produce output where the order of the attributes changes.
 This makes using the command line `diff` utility completely useless in comparing two XML files.
 
 xml-diff will sort the attributes and values and then perform a `diff` on the results.
@@ -29,7 +29,7 @@ You can run tests on the command line with
 
 The command line is in this directory.  The package that performs most of the work is `xmllib`.
 
-    import github.com/pschlump/xml-diff/xmllib
+    import "github.com/pschlump/xml-diff/xmllib"
 
 ## Example
 
@@ -67,26 +67,26 @@ and
 </ConnectedApp>
 ```
 
-you can run:
+You can run:
 
 	./xml-diff -l ./testdata/left.xml -r ./testdata/right.xml 
 
-the output is:
+The output is:
 
 ![Output From Diff](https://github.com/pschlump/xml-diff/raw/master/out/test01.png "Output from xml-diff")
 
-if you add the `-byLine` flag the diff will be shown by lines.
+If you add the `-byLine` flag the diff will be shown by lines.
 
 	./xml-diff -l ./testdata/left.xml -r ./testdata/right.xml -byLine
 
-the output is:
+The output is:
 
 ![Output From Diff](https://github.com/pschlump/xml-diff/raw/master/out/test02.png "Output from xml-diff with byLine flag")
 
 
-### Algorythm
+### Algorithm
 
-The diff is based on the [myers](https://neil.fraser.name/software/diff_match_patch/myers.pdf) algorithm.  This is the most common
+The diff is based on the [Myers](https://neil.fraser.name/software/diff_match_patch/myers.pdf) algorithm.  This is the most common
 approach to comparing differences between files.  
 
 An alternative approach would be to perform the difference on the XML node-tree in memory.   Because of my plan to be able to move
@@ -102,7 +102,7 @@ able to xml-diff files of up to 30 Mb in size.
 ### Performance
 
 The XML read/parse and generate will run about 10 MB of XML in a second.  100ms should compare about 1 MB of XML.  Performance is
-heavily dependent on how much data has to be sorted.   If there are lots of XML nodes that have to be build and then sorted it will
+heavily dependent on how much data has to be sorted.   If there are lots of XML nodes that have to be built and then sorted it will
 take longer to process.
 
 ## TODO
