@@ -19,6 +19,54 @@ The command line is in this directory.  The package that performs most of the wo
 
     import github.com/pschlump/xml-diff/xmllib
 
+## Example
+
+For XML inputs
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<ConnectedApp xmlns="http://soap.sforce.com/2006/04/metadata">
+	<contactEmail>foo@example.org</contactEmail>
+	<label>WooCommerce</label>
+	<oauthConfig>
+		<scopes>Basic</scopes>
+		<scopes>Api</scopes>
+		<scopes>Web</scopes>
+		<scopes>Full</scopes>
+		<callbackUrl>https://login.salesforce.com/services/oauth2/callback</callbackUrl>
+		<consumerKey>CLIENTID</consumerKey>
+	</oauthConfig>
+</ConnectedApp>
+```
+
+and 
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<ConnectedApp xmlns="http://soap.sforce.com/2006/04/metadata">
+	<contactEmail>foo@example.org</contactEmail>
+	<label>WooCommerce</label>
+	<oauthConfig>
+		<callbackUrl>https://login.salesforce.com/services/oauth2/callback</callbackUrl>
+		<consumerKey>OTHER</consumerKey>
+		<scopes>Full</scopes>
+		<scopes>Basic</scopes>
+	</oauthConfig>
+</ConnectedApp>
+```
+
+you can run:
+
+	./xml-diff -l ./testdata/left.xml -r ./testdata/right.xml 
+
+the output is:
+
+![Output From Diff](https://github.com/pschlump/out/raw/master/src/common/images/test01.png "Output from standard xml-diff")
+
+if you add the `-byLine` flag the diff will be shown by lines.
+
+![Output From Diff](https://github.com/pschlump/out/raw/master/src/common/images/test02.png "Output from xml-diff with byLine flag")
+
 ### Algorythm
 
 The diff is based on the [myers](https://neil.fraser.name/software/diff_match_patch/myers.pdf) algorithm.  This is the most common
