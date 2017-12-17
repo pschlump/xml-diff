@@ -61,11 +61,12 @@ you can run:
 
 the output is:
 
-![Output From Diff](https://github.com/pschlump/xml-diff/out/raw/master/test01.png "Output from standard xml-diff")
+![Output From Diff](https://github.com/pschlump/xml-diff/raw/master/out/test01.png "Output from xml-diff")
 
 if you add the `-byLine` flag the diff will be shown by lines.
 
-![Output From Diff](https://github.com/pschlump/xml-diff/out/raw/master/src/common/images/test02.png "Output from xml-diff with byLine flag")
+![Output From Diff](https://github.com/pschlump/xml-diff/raw/master/out/test02.png "Output from xml-diff with byLine flag")
+
 
 ### Algorythm
 
