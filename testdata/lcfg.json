@@ -1,0 +1,6 @@
+{
+	"AttrsToValue": [
+		{ "TagName": "tag", "AttrName": "k", "ValName": "tag" },
+		{ "TagName": "other", "AttrName": "attr", "ValName": "OtherAttr" }
+	]
+}
