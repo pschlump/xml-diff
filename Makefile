@@ -20,6 +20,12 @@ test02:
 	diff out/rc02.xml ref
 	diff out/test02.out ref
 
-test03:
+test03: build
+	./xml-diff -byLine -l ./testdata/l_t03.xml -r ./testdata/r_t03.xml -lo ./out/lc03.xml -ro ./out/rc03.xml  -lcfg ./testdata/lcfg.json
 
+a03: build
+	./xml-diff -byLine -l ./testdata/l_t03a.xml -r ./testdata/r_t03a.xml -lo ./out/lc03.xml -ro ./out/rc03.xml  -lcfg ./testdata/lcfg.json
+
+a04: build
+	./xml-diff -byLine -l ./testdata/l_t04a.xml -r ./testdata/r_t04a.xml -lo ./out/lc04.xml -ro ./out/rc04.xml  -lcfg ./testdata/lcfg_04.json -rcfg ./testdata/lcfg_04.json
 

@@ -27,14 +27,23 @@ type Element struct {
 	Label  string
 }
 
-func (dec *Decoder) SetAttributePrefix(prefix string) {
+func (dec *Decoder) SetAttributePrefix(prefix string) *Decoder {
 	dec.attributePrefix = prefix
+	return dec
 }
 
-func (dec *Decoder) SetContentPrefix(prefix string) {
+func (dec *Decoder) SetContentPrefix(prefix string) *Decoder {
 	dec.contentPrefix = prefix
+	return dec
 }
 
+func (dec *Decoder) SetCustomPrefixes(att, cont string) *Decoder {
+	dec.attributePrefix = att
+	dec.contentPrefix = cont
+	return dec
+}
+
+// xyzzy - deptricate this
 func (dec *Decoder) DecodeWithCustomPrefixes(root *Node, contentPrefix string, attributePrefix string) error {
 	dec.contentPrefix = contentPrefix
 	dec.attributePrefix = attributePrefix
@@ -43,17 +52,14 @@ func (dec *Decoder) DecodeWithCustomPrefixes(root *Node, contentPrefix string, a
 
 // NewDecoder returns a new decoder that reads from r.
 func NewDecoder(r io.Reader) *Decoder {
-	return &Decoder{r: r}
+	return &Decoder{
+		r:               r,
+		attributePrefix: attrPrefix,
+		contentPrefix:   contentPrefix,
+	}
 }
 
 func (dec *Decoder) Decode(root *Node) error {
-
-	if dec.contentPrefix == "" {
-		dec.contentPrefix = contentPrefix
-	}
-	if dec.attributePrefix == "" {
-		dec.attributePrefix = attrPrefix
-	}
 
 	xmlDec := xml.NewDecoder(dec.r)
 

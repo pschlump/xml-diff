@@ -13,7 +13,9 @@ import (
 	"strings"
 	"unicode/utf8"
 
+	"github.com/pschlump/MiscLib"
 	"github.com/pschlump/godebug"
+	"github.com/pschlump/xml-diff/cfgLib"
 )
 
 // An Encoder writes JSON objects to an output stream.
@@ -31,6 +33,7 @@ type Encoder struct {
 	combineContent    map[string]string
 	noSortTag         bool
 	noSortTagName     map[string]bool
+	Config            CfgType
 }
 
 // NewEncoder returns a new encoder that writes to w.
@@ -96,6 +99,12 @@ func (enc *Encoder) Encode(root *Node) error {
 		enc.write("\n")
 	case "xml", "XML":
 		// fmt.Printf("root=%s\n", godebug.SVarI(root))
+		godebug.Printf(db2, "Encode Original: %s\n", godebug.SVarI(root))
+		enc.err = enc.processXml(root, "", 0)
+		if enc.err != nil {
+			return enc.err
+		}
+		godebug.Printf(db2, "Encode After processXml:  %s \n", godebug.SVarI(root))
 		enc.err = enc.formatXml(root, "", 0)
 	default:
 		fmt.Fprintf(os.Stderr, "Invalid format %s AT: %s\n", enc.outputFmt, godebug.LF())
@@ -375,4 +384,191 @@ func sanitiseString(s string) string {
 	return buf.String()
 }
 
+func (enc *Encoder) processXml(curNode *Node, tag string, lvl int) (err error) {
+
+	godebug.Printf(db1, "procesXml: curNode -- at %s -- =%s, depth=%d\n", tag, godebug.SVarI(curNode), lvl)
+
+	cfg := enc.Config
+
+	var getAttrs = func(curNode *Node) {
+		match := false
+		for name, it := range curNode.Children {
+			// name = name[len(enc.attributePrefix):]
+			match = false
+			godebug.Printf(db1, "getAttrs: name=%s it=%s AT: %s\n", name, godebug.SVarI(it), godebug.LF())
+			for kk, it2 := range it {
+				godebug.Printf(db3, "kk=%v it2=%v AT: %s\n", kk, SVar(it2), godebug.LF())
+				if it2.NType == AttrNode {
+					godebug.Printf(db3, "fond AttrNode AT: %s\n", godebug.LF())
+					// xyzzy - wild card
+					if n, ok := cfg.attrsLookup[tag]; ok {
+						godebug.Printf(db3, "found attribute in attrsLookup for tag=[%s], n=%d AT: %s\n", tag, n, godebug.LF())
+						// xyzzy - wild card
+						if cfg.AttrsToValue[n].AttrName == name {
+							godebug.Printf(db3, "%sfound AttrsToValue[%d] name=[%s] AT: %s%s\n", MiscLib.ColorGreen, n, name, godebug.LF(), MiscLib.ColorReset)
+							it2.NType = ValNode
+							it[kk] = it2
+							match = true
+						}
+					}
+				}
+			}
+			if match {
+				curNode.Children[name] = it
+				godebug.Printf(db3, "%smatch=true it=%s AT: %s%s\n", MiscLib.ColorGreen, SVar(it), godebug.LF(), MiscLib.ColorReset)
+			}
+		}
+	}
+
+	var HasVal = func() (has bool) {
+		for _, it := range curNode.Children {
+			for _, it2 := range it {
+				if it2.NType == ValNode {
+					return true
+				}
+			}
+		}
+		return
+	}
+
+	// ------------------------------------------------------------------------------------------------------
+
+	if curNode.NType == RootNode {
+		for tag, cur := range curNode.Children {
+			for _, aNode := range cur {
+				enc.processXml(aNode, tag, lvl) // no add - at top.
+			}
+		}
+		return
+	}
+
+	getAttrs(curNode)
+
+	if !HasVal() && len(curNode.Data) == 0 {
+		return
+	}
+
+	if HasVal() {
+		// for name, it := range curNode.Children {
+		keys := KeysFromMap(curNode.Children)
+		if !enc.noSortTag || !enc.noSortTagName[tag] {
+			sort.Strings(keys)
+		}
+		match := false
+		for _, name := range keys {
+			match = false
+			it := curNode.Children[name]
+			godebug.Printf(db5, "%sgetAttrs: tag=%s name=%s it=%s AT: %s%s\n", MiscLib.ColorYellow, tag, name, godebug.SVarI(it), godebug.LF(), MiscLib.ColorReset)
+			for kk, it2 := range it {
+				godebug.Printf(db5, "kk=%v it2=%v AT: %s\n", kk, SVar(it2), godebug.LF())
+				if it2.NType == ValNode {
+					godebug.Printf(db5, "fond ValNode tag=[%s] valsLookup=%s AT: %s\n", tag, SVar(cfg.valsLookup), godebug.LF())
+					godebug.Printf(db1, "X8 node[%s] value = %s\n\n", name, godebug.SVarI(it2))
+					// xyzzy - wild card
+					if n, ok := cfg.valsLookup[tag]; ok {
+						godebug.Printf(db5, "found attribute in attrsLookup for tag=[%s], n=%d AT: %s\n", tag, n, godebug.LF())
+						// xyzzy - wild card
+						if cfg.ValueToAttr[n].AttrName == name {
+							godebug.Printf(db5, "%sfound AttrsToValue[%d] name=[%s] AT: %s%s\n", MiscLib.ColorGreen, n, name, godebug.LF(), MiscLib.ColorReset)
+							it2.NType = AttrNode
+							match = true
+							it[kk] = it2
+						}
+					}
+					if match {
+						curNode.Children[name] = it
+						godebug.Printf(db5, "%smatch=true it=%s AT: %s%s\n", MiscLib.ColorGreen, SVar(it), godebug.LF(), MiscLib.ColorReset)
+					}
+					e0 := enc.processXml(it2, name, lvl+1)
+					if e0 != nil {
+						return e0
+					}
+				}
+			}
+		}
+	}
+
+	return nil
+}
+
+/*
+	attrs:
+		tag-name attr-name -> nested-tag-name
+		tag-name * -> nested-tag-name
+		* attr-name -> nested-tag-name
+		* * -> *
+
+	content:
+		tag-name -> attr-name
+		* -> attr-name
+		* -> *
+
+	nosort:
+		tag
+		tag
+*/
+
+type AttrToValueType struct {
+	TagName  string `json:"TagName"`
+	AttrName string `json:"AttrName"`
+	ValName  string `json:"ValName"`
+}
+
+type ValueToAttrType struct {
+	TagName  string `json:"TagName"`
+	AttrName string `json:"AttrName"`
+}
+
+type NoSortType struct {
+	TagName string `json:"TagName"`
+}
+
+type CfgType struct {
+	AttrsToValue []AttrToValueType `json:"AttrsToValue"`
+	ValueToAttr  []ValueToAttrType `json:"ValueToAttr"`
+	NoSort       []NoSortType      `json:"NoSort"`
+	attrsLookup  map[string]int
+	valsLookup   map[string]int
+	noSortLookup map[string]bool
+}
+
+func ReadCfg(fn string) (cfg CfgType) {
+
+	if fn == "" {
+		return
+	}
+
+	if !Exists(fn) {
+		fmt.Fprintf(os.Stderr, "Missing configuration file %s\n", fn)
+		os.Exit(1)
+	}
+
+	cfgLib.ReadConfigFile(fn, &cfg)
+
+	cfg.attrsLookup = make(map[string]int)
+	cfg.valsLookup = make(map[string]int)
+	cfg.noSortLookup = make(map[string]bool)
+	for ii, vv := range cfg.AttrsToValue {
+		cfg.attrsLookup[vv.TagName] = ii
+	}
+	for ii, vv := range cfg.ValueToAttr {
+		cfg.valsLookup[vv.TagName] = ii
+	}
+	for _, vv := range cfg.NoSort {
+		cfg.noSortLookup[vv.TagName] = true
+	}
+
+	godebug.Printf(db4, "Cfg=%s\n", SVarI(cfg))
+	godebug.Printf(db4, "valsLookup=%s\n", SVarI(cfg.valsLookup))
+
+	return
+}
+
 const db0 = false
+const db1 = false
+const db2 = false
+const db3 = false
+const db4 = false
+const db5 = false
+
+/* vim: set noai ts=4 sw=4: */

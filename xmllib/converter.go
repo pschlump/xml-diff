@@ -16,10 +16,8 @@ func Convert(r io.Reader) (*bytes.Buffer, error) {
 
 	// Then encode it in JSON
 	buf := new(bytes.Buffer)
-	// PJS - func (enc *Encoder) IndentOption(s string) *Encoder {
 	enc := NewEncoder(buf)
-	//	enc.IndentOption("\t")
-	//	enc.OutputFormatOption("xml")
+	enc.OutputFormatOption("json")
 
 	err = enc.Encode(root)
 	if err != nil {
@@ -30,10 +28,10 @@ func Convert(r io.Reader) (*bytes.Buffer, error) {
 }
 
 // Convert converts the given XML document to JSON
-func ConvertXML(r io.Reader) (*bytes.Buffer, error) {
+func ConvertXML(r io.Reader, cfg CfgType) (*bytes.Buffer, error) {
 	// Decode XML document
 	root := &Node{}
-	err := NewDecoder(r).Decode(root)
+	err := NewDecoder(r).SetCustomPrefixes("", "").Decode(root)
 	if err != nil {
 		return nil, err
 	}
@@ -44,6 +42,9 @@ func ConvertXML(r io.Reader) (*bytes.Buffer, error) {
 	enc := NewEncoder(buf)
 	enc.IndentOption("\t")
 	enc.OutputFormatOption("xml")
+	enc.CustomPrefixesOption("", "")
+	enc.Config = cfg
+	enc.noSortTagName = cfg.noSortLookup
 
 	err = enc.Encode(root)
 	if err != nil {

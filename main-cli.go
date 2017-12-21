@@ -3,36 +3,17 @@ package main
 /*
 TODO
 
-2. Implement as pre-process on tree
-	combineAllAttrs   bool
-	combineAttrs      map[string]map[string]bool // tagName . Attr or tagName . * - for all on tag
-	combineAllContent bool
-	combineContent    map[string]string
-
-x. Read in config for (2) above
-	-lcfg - left config
-	-rcfg - right config
-	attrs:
-		tag-name attr-name -> nested-tag-name
-		tag-name * -> nested-tag-name
-		* attr-name -> nested-tag-name
-		* * -> *
-
-	content:
-		tag-name -> attr-name
-		* -> attr-name
-		* -> *
-
-	nosort:
-		tag
-		tag
+Test the config files
+Document the config files
 
 
-
-
+1. Add debug lib from blockchain
 
 
 -- done -- -- done -- -- done -- -- done -- -- done -- -- done -- -- done -- -- done -- -- done -- -- done -- -- done -- -- done --
+
+
+
 
 */
 
@@ -72,8 +53,11 @@ func main() {
 		os.Exit(1)
 	}
 
-	cleanXmlLeft := XmlClean(*Left, *LeftOut)
-	cleanXmlRight := XmlClean(*Right, *RightOut)
+	lcfg := xmllib.ReadCfg(*LeftCfg)
+	rcfg := xmllib.ReadCfg(*RightCfg)
+
+	cleanXmlLeft := XmlClean(*Left, *LeftOut, lcfg)
+	cleanXmlRight := XmlClean(*Right, *RightOut, rcfg)
 
 	dmp := diffmatchpatch.New()
 	if !*ByLine {
@@ -87,7 +71,7 @@ func main() {
 	}
 }
 
-func XmlClean(fn, ofn string) string {
+func XmlClean(fn, ofn string, cfg xmllib.CfgType) string {
 
 	// If file not exits - then fail
 	if !xmllib.Exists(fn) {
@@ -101,7 +85,7 @@ func XmlClean(fn, ofn string) string {
 		os.Exit(1)
 	}
 	xml := strings.NewReader(string(buf))
-	cleanXmlLeft, err := xmllib.ConvertXML(xml) // returns a []byte, err
+	cleanXmlLeft, err := xmllib.ConvertXML(xml, cfg) // returns a []byte, err
 	if err != nil {
 		fmt.Printf("Error: %s\n", err)
 		os.Exit(1)
