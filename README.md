@@ -107,7 +107,7 @@ take longer to process.
 
 ## TODO
 
-1. Partial support is in place for moving attributes to values or values back to attributes. The same database vendor seems to arbitrarily swap these in its XML dump.
+1. Support is in place for moving attributes to values or values back to attributes. The same database vendor seems to arbitrarily swap these in its XML dump.  I am testing this and will add documentation for it.
 2. Better documentation.
 
 
