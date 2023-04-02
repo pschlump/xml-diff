@@ -7,8 +7,8 @@
 [31m		<consumerKey>CLIENTID</consumerKey>
 		<scopes>Basic</scopes>
 		<scopes>Api</scopes>
-		<scopes>Web</scopes>
-[0m[32m		<consumerKey>OTHER</consumerKey>
+[0m<?xml version="1.0" encoding="UTF-8"?>
+[31m[0m[32m	<label>WooCommerce</label>
 [0m		<scopes>Full</scopes>
 [32m		<scopes>Basic</scopes>
 [0m	</oauthConfig>

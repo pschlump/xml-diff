@@ -79,7 +79,7 @@ func (dec *Decoder) Decode(root *Node) error {
 			break
 		}
 
-		// fmt.Printf("t=%s\n", godebug.SVar(t))
+		// fmt.Printf("t=%s\n", dbgo.SVar(t))
 
 		switch se := t.(type) {
 		case xml.StartElement:

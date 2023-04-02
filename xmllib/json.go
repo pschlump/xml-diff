@@ -14,7 +14,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/pschlump/MiscLib"
-	"github.com/pschlump/godebug"
+	"github.com/pschlump/dbgo"
 	"github.com/pschlump/xml-diff/cfgLib"
 )
 
@@ -98,17 +98,17 @@ func (enc *Encoder) Encode(root *Node) error {
 		enc.err = enc.formatJson(root, 0)
 		enc.write("\n")
 	case "xml", "XML":
-		// fmt.Printf("root=%s\n", godebug.SVarI(root))
-		godebug.Printf(db2, "Encode Original: %s\n", godebug.SVarI(root))
+		// fmt.Printf("root=%s\n", dbgo.SVarI(root))
+		dbgo.DbPf(db2, "Encode Original: %s\n", dbgo.SVarI(root))
 		enc.err = enc.processXml(root, "", 0)
 		if enc.err != nil {
 			return enc.err
 		}
-		godebug.Printf(db2, "Encode After processXml:  %s \n", godebug.SVarI(root))
+		dbgo.DbPf(db2, "Encode After processXml:  %s \n", dbgo.SVarI(root))
 		enc.err = enc.formatXml(root, "", 0)
 	default:
-		fmt.Fprintf(os.Stderr, "Invalid format %s AT: %s\n", enc.outputFmt, godebug.LF())
-		return fmt.Errorf("Invalid format %s AT: %s\n", enc.outputFmt, godebug.LF())
+		fmt.Fprintf(os.Stderr, "Invalid format %s AT: %s\n", enc.outputFmt, dbgo.LF())
+		return fmt.Errorf("Invalid format %s AT: %s\n", enc.outputFmt, dbgo.LF())
 	}
 
 	return enc.err
@@ -117,14 +117,14 @@ func (enc *Encoder) Encode(root *Node) error {
 func (enc *Encoder) formatXml(curNode *Node, tag string, lvl int) (err error) {
 
 	if db0 {
-		fmt.Printf("curNode -- at %s -- =%s, depth=%d\n", tag, godebug.SVarI(curNode), lvl)
+		fmt.Printf("curNode -- at %s -- =%s, depth=%d\n", tag, dbgo.SVarI(curNode), lvl)
 	}
 
 	var getAttrs = func(curNode *Node) (rv map[string]string) {
 		rv = make(map[string]string)
 		for name, it := range curNode.Children {
 			if db0 {
-				fmt.Printf("name=%s it=%s AT: %s\n", name, godebug.SVarI(it), godebug.LF())
+				fmt.Printf("name=%s it=%s AT: %s\n", name, dbgo.SVarI(it), dbgo.LF())
 			}
 			for _, it2 := range it {
 				if it2.NType == AttrNode {
@@ -174,7 +174,7 @@ func (enc *Encoder) formatXml(curNode *Node, tag string, lvl int) (err error) {
 	enc.write(in, "<", tag)
 	attrs := getAttrs(curNode)
 	if db0 {
-		fmt.Printf("X7 - has children, not RootNode \nattrs = %s\n\n", godebug.SVarI(attrs))
+		fmt.Printf("X7 - has children, not RootNode \nattrs = %s\n\n", dbgo.SVarI(attrs))
 	}
 	renderAttrs(attrs)
 
@@ -203,7 +203,7 @@ func (enc *Encoder) formatXml(curNode *Node, tag string, lvl int) (err error) {
 			for _, it2 := range it {
 				if it2.NType == ValNode {
 					if db0 {
-						fmt.Printf("X8 node[%s] value = %s\n\n", name, godebug.SVarI(it2))
+						fmt.Printf("X8 node[%s] value = %s\n\n", name, dbgo.SVarI(it2))
 					}
 					e0 := enc.formatXml(it2, name, lvl+1)
 					if e0 != nil {
@@ -386,7 +386,7 @@ func sanitiseString(s string) string {
 
 func (enc *Encoder) processXml(curNode *Node, tag string, lvl int) (err error) {
 
-	godebug.Printf(db1, "procesXml: curNode -- at %s -- =%s, depth=%d\n", tag, godebug.SVarI(curNode), lvl)
+	dbgo.DbPf(db1, "procesXml: curNode -- at %s -- =%s, depth=%d\n", tag, dbgo.SVarI(curNode), lvl)
 
 	cfg := enc.Config
 
@@ -395,17 +395,17 @@ func (enc *Encoder) processXml(curNode *Node, tag string, lvl int) (err error) {
 		for name, it := range curNode.Children {
 			// name = name[len(enc.attributePrefix):]
 			match = false
-			godebug.Printf(db1, "getAttrs: name=%s it=%s AT: %s\n", name, godebug.SVarI(it), godebug.LF())
+			dbgo.DbPf(db1, "getAttrs: name=%s it=%s AT: %s\n", name, dbgo.SVarI(it), dbgo.LF())
 			for kk, it2 := range it {
-				godebug.Printf(db3, "kk=%v it2=%v AT: %s\n", kk, SVar(it2), godebug.LF())
+				dbgo.DbPf(db3, "kk=%v it2=%v AT: %s\n", kk, SVar(it2), dbgo.LF())
 				if it2.NType == AttrNode {
-					godebug.Printf(db3, "fond AttrNode AT: %s\n", godebug.LF())
+					dbgo.DbPf(db3, "fond AttrNode AT: %s\n", dbgo.LF())
 					// xyzzy - wild card
 					if n, ok := cfg.attrsLookup[tag]; ok {
-						godebug.Printf(db3, "found attribute in attrsLookup for tag=[%s], n=%d AT: %s\n", tag, n, godebug.LF())
+						dbgo.DbPf(db3, "found attribute in attrsLookup for tag=[%s], n=%d AT: %s\n", tag, n, dbgo.LF())
 						// xyzzy - wild card
 						if cfg.AttrsToValue[n].AttrName == name {
-							godebug.Printf(db3, "%sfound AttrsToValue[%d] name=[%s] AT: %s%s\n", MiscLib.ColorGreen, n, name, godebug.LF(), MiscLib.ColorReset)
+							dbgo.DbPf(db3, "%sfound AttrsToValue[%d] name=[%s] AT: %s%s\n", MiscLib.ColorGreen, n, name, dbgo.LF(), MiscLib.ColorReset)
 							it2.NType = ValNode
 							it[kk] = it2
 							match = true
@@ -415,7 +415,7 @@ func (enc *Encoder) processXml(curNode *Node, tag string, lvl int) (err error) {
 			}
 			if match {
 				curNode.Children[name] = it
-				godebug.Printf(db3, "%smatch=true it=%s AT: %s%s\n", MiscLib.ColorGreen, SVar(it), godebug.LF(), MiscLib.ColorReset)
+				dbgo.DbPf(db3, "%smatch=true it=%s AT: %s%s\n", MiscLib.ColorGreen, SVar(it), dbgo.LF(), MiscLib.ColorReset)
 			}
 		}
 	}
@@ -458,18 +458,18 @@ func (enc *Encoder) processXml(curNode *Node, tag string, lvl int) (err error) {
 		for _, name := range keys {
 			match = false
 			it := curNode.Children[name]
-			godebug.Printf(db5, "%sgetAttrs: tag=%s name=%s it=%s AT: %s%s\n", MiscLib.ColorYellow, tag, name, godebug.SVarI(it), godebug.LF(), MiscLib.ColorReset)
+			dbgo.DbPf(db5, "%sgetAttrs: tag=%s name=%s it=%s AT: %s%s\n", MiscLib.ColorYellow, tag, name, dbgo.SVarI(it), dbgo.LF(), MiscLib.ColorReset)
 			for kk, it2 := range it {
-				godebug.Printf(db5, "kk=%v it2=%v AT: %s\n", kk, SVar(it2), godebug.LF())
+				dbgo.DbPf(db5, "kk=%v it2=%v AT: %s\n", kk, SVar(it2), dbgo.LF())
 				if it2.NType == ValNode {
-					godebug.Printf(db5, "fond ValNode tag=[%s] valsLookup=%s AT: %s\n", tag, SVar(cfg.valsLookup), godebug.LF())
-					godebug.Printf(db1, "X8 node[%s] value = %s\n\n", name, godebug.SVarI(it2))
+					dbgo.DbPf(db5, "fond ValNode tag=[%s] valsLookup=%s AT: %s\n", tag, SVar(cfg.valsLookup), dbgo.LF())
+					dbgo.DbPf(db1, "X8 node[%s] value = %s\n\n", name, dbgo.SVarI(it2))
 					// xyzzy - wild card
 					if n, ok := cfg.valsLookup[tag]; ok {
-						godebug.Printf(db5, "found attribute in attrsLookup for tag=[%s], n=%d AT: %s\n", tag, n, godebug.LF())
+						dbgo.DbPf(db5, "found attribute in attrsLookup for tag=[%s], n=%d AT: %s\n", tag, n, dbgo.LF())
 						// xyzzy - wild card
 						if cfg.ValueToAttr[n].AttrName == name {
-							godebug.Printf(db5, "%sfound AttrsToValue[%d] name=[%s] AT: %s%s\n", MiscLib.ColorGreen, n, name, godebug.LF(), MiscLib.ColorReset)
+							dbgo.DbPf(db5, "%sfound AttrsToValue[%d] name=[%s] AT: %s%s\n", MiscLib.ColorGreen, n, name, dbgo.LF(), MiscLib.ColorReset)
 							it2.NType = AttrNode
 							match = true
 							it[kk] = it2
@@ -477,7 +477,7 @@ func (enc *Encoder) processXml(curNode *Node, tag string, lvl int) (err error) {
 					}
 					if match {
 						curNode.Children[name] = it
-						godebug.Printf(db5, "%smatch=true it=%s AT: %s%s\n", MiscLib.ColorGreen, SVar(it), godebug.LF(), MiscLib.ColorReset)
+						dbgo.DbPf(db5, "%smatch=true it=%s AT: %s%s\n", MiscLib.ColorGreen, SVar(it), dbgo.LF(), MiscLib.ColorReset)
 					}
 					e0 := enc.processXml(it2, name, lvl+1)
 					if e0 != nil {
@@ -558,8 +558,8 @@ func ReadCfg(fn string) (cfg CfgType) {
 		cfg.noSortLookup[vv.TagName] = true
 	}
 
-	godebug.Printf(db4, "Cfg=%s\n", SVarI(cfg))
-	godebug.Printf(db4, "valsLookup=%s\n", SVarI(cfg.valsLookup))
+	dbgo.DbPf(db4, "Cfg=%s\n", SVarI(cfg))
+	dbgo.DbPf(db4, "valsLookup=%s\n", SVarI(cfg.valsLookup))
 
 	return
 }
