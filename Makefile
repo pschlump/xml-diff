@@ -29,3 +29,8 @@ a03: build
 a04: build
 	./xml-diff -byLine -l ./testdata/l_t04a.xml -r ./testdata/r_t04a.xml -lo ./out/lc04.xml -ro ./out/rc04.xml  -lcfg ./testdata/lcfg_04.json -rcfg ./testdata/lcfg_04.json
 
+
+install:
+	( cd ~/bin ; rm -f xml-diff )
+	( cd ~/bin ; ln -s ../go/src/github.com/pschlump/xml-diff/xml-diff . )
+
