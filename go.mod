@@ -5,7 +5,7 @@ go 1.22.0
 require (
 	github.com/bitly/go-simplejson v0.5.1
 	github.com/pschlump/Go-FTL v0.7.6
-	github.com/pschlump/MiscLib v1.0.3
+	github.com/pschlump/MiscLib v1.0.7
 	github.com/pschlump/dbgo v1.0.6
 	github.com/sergi/go-diff v1.3.1
 	github.com/stretchr/testify v1.9.0
@@ -16,13 +16,13 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/google/uuid v1.0.0 // indirect
 	github.com/lib/pq v1.0.0 // indirect
-	github.com/mattn/go-colorable v0.1.12 // indirect
-	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/pborman/uuid v1.2.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/pschlump/HashStr v1.0.0 // indirect
-	github.com/pschlump/ansi v1.0.1 // indirect
+	github.com/pschlump/ansi v1.0.6 // indirect
 	github.com/pschlump/filelib v1.0.6 // indirect
+	github.com/pschlump/go-colorable v0.0.22 // indirect
+	github.com/pschlump/go-isatty v0.0.22 // indirect
 	github.com/pschlump/godebug v0.9.1 // indirect
 	github.com/pschlump/json v1.12.0 // indirect
 	github.com/pschlump/radix.v2 v0.0.0-20161003041916-12a9aa275d4e // indirect
